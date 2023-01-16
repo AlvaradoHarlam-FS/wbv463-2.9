@@ -1,25 +1,44 @@
-const express = require('express');
+import express from "express"
+import dotenv from "dotenv"
+import mongoose from "mongoose"
+import path from "path"
+import cors from "cors"
+import studentRouter from "./routes/students.routes.js"
 
-require('dotenv').config();
-const mongoose = require('mongoose');
-const path = require('path');
-const cors = require('cors');
+// Load environment variables
+dotenv.config()
 
-const app = express();
+// Add __filename and __dirname to esm
+import * as url from 'url';
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-const PORT = process.env.PORT || 8000;
+// create app and setup middleware
+const app = express()
+app.use(express.json())
+app.use(cors())
 
-const DATABASE_URL = process.env.DATABASE_URL;
+// Routes
+app.use('/api/v1/students', studentRouter)
 
-mongoose.connect(DATABASE_URL, { useNewUrlParser: true });
-const db = mongoose.connection;
-db.on('error', error => console.error(error));
-db.once('open', () => console.log('connection satisfies'))
-
-const studentRouter = require('./routes/students')
-app.use('/students', studentRouter)
-
-app.listen(PORT, () => {
-    console.log(`listening on port ${PORT}`)
+// Serve static bundle if route is not /api/*
+app.use(express.static(path.join(__dirname, '../reactjs/build')))
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../reactjs/build', 'index.html'))
 })
 
+
+const PORT = process.env.PORT || 8000
+
+const DATABASE_URL = process.env.DATABASE_URL
+mongoose.connect(DATABASE_URL, { useNewUrlParser: true })
+
+const db = mongoose.connection
+
+db.on('error', error => console.error(error))
+db.once('open', () => console.log('Database connection established.'))
+
+
+app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`)
+})
