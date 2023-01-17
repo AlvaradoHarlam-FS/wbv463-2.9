@@ -1,0 +1,29 @@
+GET http://localhost:8000/students
+
+###
+
+GET http://localhost:8000/students/638d093b706fbf950068a622
+
+###
+
+POST http://localhost:8000/students
+Content-Type: application/json
+
+{
+  "name": "Harlam",
+  "class": "WDV463-2.9"
+}
+
+###
+
+DELETE http://localhost:8000/students/638d093b706fbf950068a622
+
+###
+
+PATCH http://localhost:8000/students/638d09b045f2a65e8eaf034c
+Content-Type: application/json
+
+{
+  "name": "Harlam",
+  "class": "WDV463-2.9"
+}
